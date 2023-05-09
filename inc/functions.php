@@ -51,7 +51,7 @@ function wp_php_tf_create_php_file_from_mo_file( $mofile ) {
 		return;
 	}
 
-	$php_mo = new wp_php_tf_PHP_MO();
+	$php_mo = new WP_PHP_TF_PHP_MO();
 	$php_mo->merge_with( $mo );
 
 	$php_mo->export_to_file( str_replace( '.mo', '.php', $mofile ) );
@@ -132,7 +132,7 @@ function wp_php_tf_override_load_textdomain2( $override, $domain, $mofile ) {
 		}
 
 		if ( file_exists( $php_mo ) ) {
-			$mo     = new wp_php_tf_PHP_MO();
+			$mo     = new WP_PHP_TF_PHP_MO();
 			$result = $mo->import_from_file( $php_mo );
 
 			// This part here basically does the same as `load_textdomain()`
