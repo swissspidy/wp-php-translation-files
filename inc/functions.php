@@ -14,7 +14,7 @@
  * @since 0.0.1
  *
  * @param mixed $value       The variable you want to export.
- * @param bool  $return_only Optional. Whether to return the variable representation instead of outputing it. Default false.
+ * @param bool  $return_only Optional. Whether to return the variable representation instead of outputting it. Default false.
  * @return string|void The variable representation or void.
  */
 function wp_php_tf_var_export( $value, $return_only = false ) {
