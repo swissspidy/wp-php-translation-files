@@ -124,36 +124,40 @@ function wp_php_tf_override_load_textdomain( $override, $domain, $mofile ) {
 
 	$current_locale = determine_locale();
 
-	if ( is_readable( $mofile ) ) {
-		$php_mo = str_replace( '.mo', '.php', $mofile );
-
-		if ( ! file_exists( $php_mo ) ) {
-			wp_php_tf_create_php_file_from_mo_file( $mofile );
-		}
-
-		if ( file_exists( $php_mo ) ) {
-			$mo     = new WP_PHP_TF_PHP_MO();
-			$result = $mo->import_from_file( $php_mo );
-
-			// This part here basically does the same as `load_textdomain()`
-			// by merging existing translations and updating the registry.
-			if ( $result ) {
-				if ( isset( $l10n[ $domain ] ) ) {
-					$mo->merge_with( $l10n[ $domain ] );
-				}
-
-				unset( $l10n_unloaded[ $domain ] );
-
-				$l10n[ $domain ] = $mo;
-
-				$wp_textdomain_registry->set( $domain, $current_locale, dirname( $mofile ) );
-
-				return true;
-			}
-
-			$wp_textdomain_registry->set( $domain, $current_locale, false );
-		}
+	if ( ! is_readable( $mofile ) ) {
+		return $override;
 	}
 
-	return $override;
+	$php_mo = str_replace( '.mo', '.php', $mofile );
+
+	if ( ! file_exists( $php_mo ) ) {
+		wp_php_tf_create_php_file_from_mo_file( $mofile );
+	}
+
+	if ( ! file_exists( $php_mo ) ) {
+		return $override;
+	}
+
+	$mo     = new WP_PHP_TF_PHP_MO();
+	$result = $mo->import_from_file( $php_mo );
+
+	if ( ! $result ) {
+		$wp_textdomain_registry->set( $domain, $current_locale, false );
+
+		return $override;
+	}
+
+	// This part here basically does the same as `load_textdomain()`
+	// by merging existing translations and updating the registry.
+	if ( isset( $l10n[ $domain ] ) ) {
+		$mo->merge_with( $l10n[ $domain ] );
+	}
+
+	unset( $l10n_unloaded[ $domain ] );
+
+	$l10n[ $domain ] = $mo;
+
+	$wp_textdomain_registry->set( $domain, $current_locale, dirname( $mofile ) );
+
+	return true;
 }
