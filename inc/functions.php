@@ -119,7 +119,7 @@ function wp_php_tf_upgrader_process_complete( $upgrader, $hook_extra ) {
  * @param string $mofile   Path to the MO file.
  * @return bool Whether to override the .mo file loading.
  */
-function wp_php_tf_override_load_textdomain2( $override, $domain, $mofile ) {
+function wp_php_tf_override_load_textdomain( $override, $domain, $mofile ) {
 	global $l10n, $l10n_unloaded, $wp_textdomain_registry;
 
 	$current_locale = determine_locale();
