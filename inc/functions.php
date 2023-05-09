@@ -18,21 +18,21 @@
  * @return string|void The variable representation or void.
  */
 function wp_php_tf_var_export( $value, $return_only = false ) {
-	if ( is_array( $value ) ) {
-		$entries = array();
-		foreach ( $value as $key => $val ) {
-			$entries[] = var_export( $key, true ) . '=>' . wp_php_tf_var_export( $val, true );
-		}
-
-		$code = '[' . implode( ',', $entries ) . ']';
-		if ( $return_only ) {
-			return $code;
-		}
-
-		echo $code;
-	} else {
+	if ( ! is_array( $value ) ) {
 		return var_export( $value, $return_only );
 	}
+
+	$entries = array();
+	foreach ( $value as $key => $val ) {
+		$entries[] = var_export( $key, true ) . '=>' . wp_php_tf_var_export( $val, true );
+	}
+
+	$code = '[' . implode( ',', $entries ) . ']';
+	if ( $return_only ) {
+		return $code;
+	}
+
+	echo $code;
 }
 
 /**
@@ -137,9 +137,7 @@ function wp_php_tf_override_load_textdomain2( $override, $domain, $mofile ) {
 
 			// This part here basically does the same as `load_textdomain()`
 			// by merging existing translations and updating the registry.
-			if ( ! $result ) {
-				$wp_textdomain_registry->set( $domain, $current_locale, false );
-			} else {
+			if ( $result ) {
 				if ( isset( $l10n[ $domain ] ) ) {
 					$mo->merge_with( $l10n[ $domain ] );
 				}
@@ -152,6 +150,8 @@ function wp_php_tf_override_load_textdomain2( $override, $domain, $mofile ) {
 
 				return true;
 			}
+
+			$wp_textdomain_registry->set( $domain, $current_locale, false );
 		}
 	}
 
