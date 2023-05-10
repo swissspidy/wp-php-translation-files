@@ -53,7 +53,7 @@ class WP_PHP_TF_PHP_MO extends Gettext_Translations {
 		$translations = include $filename;
 
 		$headers = array(
-			'PO-Revision-Date' => $translations['translation-revision-data'],
+			'PO-Revision-Date' => $translations['translation-revision-date'],
 			'X-Generator'      => $translations['generator'],
 			'Plural-Forms'     => isset( $translations['locale_data']['messages']['']['plural-forms'] ) ? $translations['locale_data']['messages']['']['plural-forms'] : '',
 			'Language'         => isset( $translations['locale_data']['messages']['']['lang'] ) ? $translations['locale_data']['messages']['']['lang'] : '',
@@ -61,7 +61,7 @@ class WP_PHP_TF_PHP_MO extends Gettext_Translations {
 
 		$this->set_headers( array_filter( $headers ) );
 
-		foreach ( $translations['locale_data']['messages'] as $original => $translation ) {
+		foreach ( $translations['messages'] as $original => $translation ) {
 			if ( '' === $original ) {
 				continue;
 			}
@@ -87,16 +87,9 @@ class WP_PHP_TF_PHP_MO extends Gettext_Translations {
 		}
 
 		$po_file_data = array(
-			'translation-revision-data' => '+0000',
+			'translation-revision-date' => '+0000',
 			'generator'                 => 'WordPress/' . get_bloginfo( 'version' ),
-			'domain'                    => 'messages',
-			'locale_data'               => array(
-				'messages' => array(
-					'' => array(
-						'domain' => 'messages',
-					),
-				),
-			),
+			'messages'                  => array(),
 		);
 
 		/**
@@ -108,19 +101,19 @@ class WP_PHP_TF_PHP_MO extends Gettext_Translations {
 			if ( empty( array_filter( $entry->translations ) ) ) {
 				continue;
 			}
-			$po_file_data['locale_data']['messages'][ $key ] = $entry->translations;
+			$po_file_data['messages'][ $key ] = $entry->translations;
 		}
 
 		$language = $this->get_header( 'Language' );
 
 		if ( $language ) {
-			$po_file_data['locale_data']['messages']['']['lang'] = $language;
+			$po_file_data['language'] = $language;
 		}
 
 		$plural_form = $this->get_header( 'Plural-Forms' );
 
 		if ( $plural_form ) {
-			$po_file_data['locale_data']['messages']['']['plural-forms'] = $plural_form;
+			$po_file_data['plural-forms'] = $plural_form;
 		}
 
 		$export = '<?php' . PHP_EOL . 'return ' . wp_php_tf_var_export( $po_file_data, true ) . ';' . PHP_EOL;

@@ -81,7 +81,7 @@ class Plugin_Test extends WP_UnitTestCase {
 
 		$expected_contents = <<<CONTENTS
 <?php
-return ['translation-revision-data'=>'+0000','generator'=>'WordPress/VERSION','domain'=>'messages','locale_data'=>['messages'=>[''=>['domain'=>'messages'],'This is a dummy plugin'=>[0=>'Das ist ein Dummy Plugin']]]];
+return ['translation-revision-date'=>'+0000','generator'=>'WordPress/VERSION','messages'=>['This is a dummy plugin'=>[0=>'Das ist ein Dummy Plugin']]];
 
 CONTENTS;
 
