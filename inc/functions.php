@@ -161,3 +161,63 @@ function wp_php_tf_override_load_textdomain( $override, $domain, $mofile ) {
 
 	return true;
 }
+
+/**
+ * Deletes translation after successful plugin deletion.
+ *
+ * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
+ *
+ * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+ * @param bool   $deleted     Whether the plugin deletion was successful.
+ */
+function wp_php_tf_deleted_plugin( $plugin_file, $deleted ) {
+	global $wp_filesystem;
+
+	if ( ! $deleted ) {
+		return;
+	}
+
+	$plugin_slug = dirname( $plugin_file );
+
+	if ( 'hello.php' === $plugin_file ) {
+		$plugin_slug = 'hello-dolly';
+	}
+
+	$plugin_translations = wp_get_installed_translations( 'plugins' );
+
+	// Remove language files, silently.
+	if ( '.' !== $plugin_slug && ! empty( $plugin_translations[ $plugin_slug ] ) ) {
+		$translations = $plugin_translations[ $plugin_slug ];
+
+		foreach ( $translations as $translation => $data ) {
+			$wp_filesystem->delete( WP_LANG_DIR . '/plugins/' . $plugin_slug . '-' . $translation . '.php' );
+		}
+	}
+}
+
+/**
+ * Deletes translation after successful theme deletion.
+ *
+ * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
+ *
+ * @param string $stylesheet Stylesheet of the theme to delete.
+ * @param bool   $deleted    Whether the plugin deletion was successful.
+ */
+function wp_php_tf_deleted_theme( $stylesheet, $deleted ) {
+	global $wp_filesystem;
+
+	if ( ! $deleted ) {
+		return;
+	}
+
+	$theme_translations = wp_get_installed_translations( 'themes' );
+
+	// Remove language files, silently.
+	if ( ! empty( $theme_translations[ $stylesheet ] ) ) {
+		$translations = $theme_translations[ $stylesheet ];
+
+		foreach ( $translations as $translation => $data ) {
+			$wp_filesystem->delete( WP_LANG_DIR . '/themes/' . $stylesheet . '-' . $translation . '.php' );
+		}
+	}
+}
