@@ -9,6 +9,23 @@ Whenever a `.php` file is available, it will be preferred over the `.mo` file, w
 Ideally, the `.php` files will be served directly from translate.wordpress.org.
 For this proof of concept, the `.php` files are created automatically after translation updates and also on demand when loading `.mo` files.
 
+## Format
+
+```php
+<?php
+return [
+	'translation-revision-date' => '+0000',
+	'generator' => 'WordPress/6.3-alpha-55629',
+	'messages' => [
+		'Foo' => ['Bar'],
+		'Bar' => ['Baz'],
+		'1 Dragon' => ['1 Dragon', '2 Dragons'],
+	]
+];
+```
+
+## Performance
+
 Nothing is faster in PHP than loading and executing another PHP file. JSON, INI, or XML would all be much slower.
 
 Some initial measurements taken for a typical frontend request:

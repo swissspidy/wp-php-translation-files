@@ -64,6 +64,21 @@ class Plugin_Test extends WP_UnitTestCase {
 				),
 				"['Foo'=>['Bar'=>'Baz'],'Foobar'=>['Lorem'=>['ipsum'=>'dolor']],'Barbaz'=>1234]",
 			),
+			'List Array'    => array(
+				array(
+					'Foo'    => array(
+						'Bar',
+						'Baz',
+					),
+					'Foobar' => array(
+						'Lorem',
+						'ipsum',
+						'dolor',
+					),
+					'Barbaz' => 1234,
+				),
+				"['Foo'=>['Bar','Baz'],'Foobar'=>['Lorem','ipsum','dolor'],'Barbaz'=>1234]",
+			),
 		);
 	}
 
@@ -81,7 +96,7 @@ class Plugin_Test extends WP_UnitTestCase {
 
 		$expected_contents = <<<CONTENTS
 <?php
-return ['translation-revision-date'=>'+0000','generator'=>'WordPress/VERSION','messages'=>['This is a dummy plugin'=>[0=>'Das ist ein Dummy Plugin']]];
+return ['translation-revision-date'=>'+0000','generator'=>'WordPress/VERSION','messages'=>['This is a dummy plugin'=>['Das ist ein Dummy Plugin']]];
 
 CONTENTS;
 

@@ -6,6 +6,40 @@
  */
 
 /**
+ * Determines if the given array is a list.
+ *
+ * An array is considered a list if its keys consist of consecutive numbers from 0 to count($array)-1.
+ *
+ * Polyfill for array_is_list() in PHP 8.1.
+ *
+ * @see https://github.com/symfony/polyfill-php81/tree/main
+ *
+ * @codeCoverageIgnore
+ *
+ * @param array $arr The array being evaluated.
+ * @return bool True if array is a list, false otherwise.
+ */
+function wp_php_tf_array_is_list( $arr ) {
+	if ( function_exists( 'array_is_list' ) ) {
+		return array_is_list( $arr );
+	}
+
+	if ( ( array() === $arr ) || ( array_values( $arr ) === $arr ) ) {
+		return true;
+	}
+
+	$next_key = -1;
+
+	foreach ( $arr as $k => $v ) {
+		if ( ++$next_key !== $k ) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
  * Outputs or returns a parsable string representation of a variable.
  *
  * Like {@see var_export()} but "minified", using short array syntax
@@ -23,8 +57,11 @@ function wp_php_tf_var_export( $value, $return_only = false ) {
 	}
 
 	$entries = array();
+
+	$is_list = wp_php_tf_array_is_list( $value );
+
 	foreach ( $value as $key => $val ) {
-		$entries[] = var_export( $key, true ) . '=>' . wp_php_tf_var_export( $val, true );
+		$entries[] = $is_list ? wp_php_tf_var_export( $val, true ) : var_export( $key, true ) . '=>' . wp_php_tf_var_export( $val, true );
 	}
 
 	$code = '[' . implode( ',', $entries ) . ']';

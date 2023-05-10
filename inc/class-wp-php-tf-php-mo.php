@@ -52,14 +52,22 @@ class WP_PHP_TF_PHP_MO extends Gettext_Translations {
 
 		$translations = include $filename;
 
+		if ( ! is_array( $translations ) || ! isset( $translations['messages'] ) ) {
+			return false;
+		}
+
 		$headers = array(
-			'PO-Revision-Date' => $translations['translation-revision-date'],
-			'X-Generator'      => $translations['generator'],
-			'Plural-Forms'     => isset( $translations['locale_data']['messages']['']['plural-forms'] ) ? $translations['locale_data']['messages']['']['plural-forms'] : '',
-			'Language'         => isset( $translations['locale_data']['messages']['']['lang'] ) ? $translations['locale_data']['messages']['']['lang'] : '',
+			'plural-forms' => 'Plural-Forms',
+			'generator'    => 'X-Generator',
+			'domain'       => 'X-Domain',
+			'language'     => 'Language',
 		);
 
-		$this->set_headers( array_filter( $headers ) );
+		foreach ( $headers as $php_header => $po_header ) {
+			if ( ! empty( $translations[ $php_header ] ) ) {
+				$this->set_header( $po_header, $translations[ $php_header ] );
+			}
+		}
 
 		foreach ( $translations['messages'] as $original => $translation ) {
 			if ( '' === $original ) {
