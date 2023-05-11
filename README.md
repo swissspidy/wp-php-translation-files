@@ -3,6 +3,7 @@
 [![Commit activity](https://img.shields.io/github/commit-activity/m/swissspidy/wp-php-translation-files)](https://github.com/swissspidy/wp-php-translation-files/pulse/monthly)
 [![Code Coverage](https://codecov.io/gh/swissspidy/wp-php-translation-files/branch/main/graph/badge.svg)](https://codecov.io/gh/swissspidy/wp-php-translation-files)
 [![License](https://img.shields.io/github/license/swissspidy/wp-php-translation-files)](https://github.com/swissspidy/wp-php-translation-files/blob/main/LICENSE)
+[![PHPStan](https://img.shields.io/badge/PHPStan-disabled-239922)](https://github.com/phpstan/phpstan)
 
 Use plain PHP files for WordPress translations instead of `.mo` files.
 
