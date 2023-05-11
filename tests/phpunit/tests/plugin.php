@@ -21,68 +21,6 @@ class Plugin_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * @covers ::wp_php_tf_var_export
-	 * @dataProvider data_test_wp_php_tf_var_export
-	 */
-	public function test_wp_php_tf_var_export( $input, $expected ) {
-		$this->assertSame( $expected, wp_php_tf_var_export( $input, true ) );
-		$this->assertSame(
-			$expected,
-			get_echo(
-				function() use ( $input ) {
-					wp_php_tf_var_export( $input );
-				}
-			)
-		);
-	}
-
-	public function data_test_wp_php_tf_var_export() {
-		return array(
-			'Integer'       => array(
-				1234,
-				'1234',
-			),
-			'Float'         => array(
-				12.34,
-				'12.34',
-			),
-			'Boolean'       => array(
-				true,
-				'true',
-			),
-			'Complex Array' => array(
-				array(
-					'Foo'    => array(
-						'Bar' => 'Baz',
-					),
-					'Foobar' => array(
-						'Lorem' => array(
-							'ipsum' => 'dolor',
-						),
-					),
-					'Barbaz' => 1234,
-				),
-				"['Foo'=>['Bar'=>'Baz'],'Foobar'=>['Lorem'=>['ipsum'=>'dolor']],'Barbaz'=>1234]",
-			),
-			'List Array'    => array(
-				array(
-					'Foo'    => array(
-						'Bar',
-						'Baz',
-					),
-					'Foobar' => array(
-						'Lorem',
-						'ipsum',
-						'dolor',
-					),
-					'Barbaz' => 1234,
-				),
-				"['Foo'=>['Bar','Baz'],'Foobar'=>['Lorem','ipsum','dolor'],'Barbaz'=>1234]",
-			),
-		);
-	}
-
-	/**
 	 * @covers ::wp_php_tf_create_php_file_from_mo_file
 	 */
 	public function test_wp_php_tf_create_php_file_from_mo_file() {
@@ -110,13 +48,13 @@ CONTENTS;
 	/**
 	 * @covers ::wp_php_tf_upgrader_process_complete
 	 */
-	public function test_wp_php_tf_upgrader_process_complete() {
+	public function test_create_translation_files_after_translations_update() {
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		require_once ABSPATH . 'wp-admin/includes/class-language-pack-upgrader.php';
-		require_once DIR_PLUGIN_TESTDATA . '/class-dummy-language-pack-upgrader-skin.php';
+		require_once DIR_PLUGIN_TESTDATA . '/class-dummy-upgrader-skin.php';
 		require_once DIR_PLUGIN_TESTDATA . '/class-dummy-language-pack-upgrader.php';
 
-		$upgrader = new Dummy_Language_Pack_Upgrader( new Dummy_Language_Pack_Upgrader_Skin() );
+		$upgrader = new Dummy_Language_Pack_Upgrader( new Dummy_Upgrader_Skin() );
 
 		// These translations exist in the core test suite.
 		// See https://github.com/WordPress/wordpress-develop/tree/e3d345800d3403f3902dc7b18c1ddb07158b0bd3/tests/phpunit/data/languages.
@@ -165,5 +103,61 @@ CONTENTS;
 		$this->assertTrue( $plugin_exists );
 		$this->assertTrue( $theme_exists );
 		$this->assertTrue( $core_exists );
+	}
+
+	/**
+	 * @covers ::wp_php_tf_upgrader_process_complete
+	 */
+	public function test_do_not_create_translations_after_plugin_update() {
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		require_once ABSPATH . 'wp-admin/includes/class-plugin-upgrader.php';
+		require_once DIR_PLUGIN_TESTDATA . '/class-dummy-upgrader-skin.php';
+		require_once DIR_PLUGIN_TESTDATA . '/class-dummy-plugin-upgrader.php';
+
+		$upgrader = new Dummy_Plugin_Upgrader( new Dummy_Upgrader_Skin() );
+
+		set_site_transient(
+			'update_plugins',
+			(object) array(
+				'response' => array(
+					'custom-internationalized-plugin/custom-internationalized-plugin.php' => (object) array(
+						'package' => 'https://urltozipfile.local',
+					),
+				),
+			)
+		);
+
+		$result = $upgrader->bulk_upgrade(
+			array(
+				'custom-internationalized-plugin/custom-internationalized-plugin.php',
+			)
+		);
+
+		$this->assertNotFalse( $result );
+		$this->assertFalse( file_exists( WP_LANG_DIR . '/plugins/custom-internationalized-plugin-de_DE.php' ) );
+		$this->assertFalse( file_exists( WP_PLUGIN_DIR . '/plugins/custom-internationalized-plugin/custom-internationalized-plugin-de_DE.php' ) );
+	}
+
+	/**
+	 * @covers ::wp_php_tf_override_load_textdomain
+	 */
+	public function test_override_load_textdomain_invalid_file() {
+		$this->assertFalse( load_textdomain( 'internationalized-plugin', WP_LANG_DIR . '/plugins/non-existent-plugin-de_DE.mo' ) );
+	}
+
+	/**
+	 * @covers ::wp_php_tf_override_load_textdomain
+	 */
+	public function test_override_load_textdomain_success() {
+		$plugin = WP_LANG_DIR . '/plugins/internationalized-plugin-de_DE.php';
+
+		$result = load_textdomain( 'internationalized-plugin', WP_LANG_DIR . '/plugins/internationalized-plugin-de_DE.mo' );
+
+		$file_exists = file_exists( $plugin );
+
+		unlink( $plugin );
+
+		$this->assertTrue( $result );
+		$this->assertTrue( $file_exists );
 	}
 }

@@ -70,10 +70,6 @@ class WP_PHP_TF_PHP_MO extends Gettext_Translations {
 		}
 
 		foreach ( $translations['messages'] as $original => $translation ) {
-			if ( '' === $original ) {
-				continue;
-			}
-
 			$entry                          = &$this->make_entry( $original, implode( "\0", $translation ) );
 			$entry->is_plural               = count( $translation ) > 1;
 			$this->entries[ $entry->key() ] = &$entry;

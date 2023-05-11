@@ -5,7 +5,7 @@
  *
  * @see WP_Upgrader
  */
-class Dummy_Language_Pack_Upgrader_Skin extends WP_Upgrader_Skin {
+class Dummy_Upgrader_Skin extends WP_Upgrader_Skin {
 	/**
 	 * @return void
 	 */

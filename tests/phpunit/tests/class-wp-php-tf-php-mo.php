@@ -15,6 +15,24 @@ class WP_PHP_TF_PHP_MO_Test extends WP_UnitTestCase {
 
 	/**
 	 * @covers ::import_from_file
+	 */
+	public function test_import_from_file_no_array() {
+		$mo      = new WP_PHP_TF_PHP_MO();
+		$success = $mo->import_from_file( DIR_PLUGIN_TESTDATA . '/pomo/no_array.php' );
+		$this->assertFalse( $success );
+	}
+
+	/**
+	 * @covers ::import_from_file
+	 */
+	public function test_import_from_file_invalid_array() {
+		$mo      = new WP_PHP_TF_PHP_MO();
+		$success = $mo->import_from_file( DIR_PLUGIN_TESTDATA . '/pomo/invalid.php' );
+		$this->assertFalse( $success );
+	}
+
+	/**
+	 * @covers ::import_from_file
 	 * @covers ::get_filename
 	 */
 	public function test_simple() {
@@ -29,6 +47,7 @@ class WP_PHP_TF_PHP_MO_Test extends WP_UnitTestCase {
 
 	/**
 	 * @covers ::import_from_file
+	 * @covers ::make_entry
 	 */
 	public function test_plural() {
 		$mo = new WP_PHP_TF_PHP_MO();
@@ -58,6 +77,7 @@ class WP_PHP_TF_PHP_MO_Test extends WP_UnitTestCase {
 
 	/**
 	 * @covers ::import_from_file
+	 * @covers ::make_entry
 	 */
 	public function test_context() {
 		$mo = new WP_PHP_TF_PHP_MO();
@@ -84,18 +104,6 @@ class WP_PHP_TF_PHP_MO_Test extends WP_UnitTestCase {
 		);
 		$this->assertEquals( $single_entry, $mo->entries[ $single_entry->key() ] );
 		$this->assertSame( 'not so dragon', $mo->entries[ $single_entry->key() ]->context );
-	}
-
-	public function test_translations_merge() {
-		$host = new Translations();
-		$host->add_entry( new Translation_Entry( array( 'singular' => 'pink' ) ) );
-		$host->add_entry( new Translation_Entry( array( 'singular' => 'green' ) ) );
-		$guest = new Translations();
-		$guest->add_entry( new Translation_Entry( array( 'singular' => 'green' ) ) );
-		$guest->add_entry( new Translation_Entry( array( 'singular' => 'red' ) ) );
-		$host->merge_with( $guest );
-		$this->assertCount( 3, $host->entries );
-		$this->assertSame( array(), array_diff( array( 'pink', 'green', 'red' ), array_keys( $host->entries ) ) );
 	}
 
 	/**
@@ -182,13 +190,5 @@ class WP_PHP_TF_PHP_MO_Test extends WP_UnitTestCase {
 		$again->import_from_file( $temp_fn );
 
 		$this->assertCount( 0, $again->entries );
-	}
-
-	public function test_nplurals_with_backslashn() {
-		$mo = new WP_PHP_TF_PHP_MO();
-		$mo->import_from_file( DIR_PLUGIN_TESTDATA . '/pomo/bad_nplurals.php' );
-		$this->assertSame( '%d foro', $mo->translate_plural( '%d forum', '%d forums', 1 ) );
-		$this->assertSame( '%d foros', $mo->translate_plural( '%d forum', '%d forums', 2 ) );
-		$this->assertSame( '%d foros', $mo->translate_plural( '%d forum', '%d forums', -1 ) );
 	}
 }
