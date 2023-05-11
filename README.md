@@ -1,6 +1,10 @@
 # WP PHP Translation Files
 
-Proof-of-concept plugin that uses plain PHP files for WordPress translations.
+[![Commit activity](https://img.shields.io/github/commit-activity/m/swissspidy/wp-php-translation-files)](https://github.com/swissspidy/wp-php-translation-files/pulse/monthly)
+[![Code Coverage](https://codecov.io/gh/swissspidy/wp-php-translation-files/branch/main/graph/badge.svg)](https://codecov.io/gh/swissspidy/wp-php-translation-files)
+[![License](https://img.shields.io/github/license/swissspidy/wp-php-translation-files)](https://github.com/swissspidy/wp-php-translation-files/blob/main/LICENSE)
+
+Use plain PHP files for WordPress translations instead of `.mo` files.
 
 The WordPress i18n system uses gettext, which operates with source `.po` (Portable Object) files and binary `.mo` (Machine Object) files for storing and loading translations. is not trivial.
 With this solution, translations will instead be stored in plain `.php` files returning an associate array of translation strings.
